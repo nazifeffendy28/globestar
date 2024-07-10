@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Globestar - Deposit</title>
+    <link rel="stylesheet" href="css/deposit.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div id="depositPage" class="container fade-in">
+        <div class="deposit-header">
+            <h1>Deposit</h1>
+            <div class="user-info">
+                <span id="username"></span>
+                <span id="wallet"></span>
+                <span id="time"></span>
+            </div>
+        </div>
+        <main>
+            <div class="form-group">
+                <label for="depositMethod">Deposit Method</label>
+                <select id="depositMethod">
+                    <option value="">-</option>
+                    <option value="bankTransfer">Bank Transfer</option>
+                    <option value="paypal">Paypal</option>
+                    <option value="moonpay">Moonpay</option>
+                    <option value="creditCard">Credit Card</option>
+                </select>
+            </div>
+            <div class="amount-section">
+                <div class="amount-group">
+                    <label id="inputLabel">Amount GSX</label>
+                    <div class="input-group">
+                        <input type="number" id="amountInput" placeholder="0.00" step="0.0001" min="0.05">
+                        <button id="flipButton" class="flip-button"><i class="fas fa-exchange-alt"></i></button>
+                    </div>
+                    <span id="input-error" class="error-message">Minimum Deposit is 0.05 GSX</span>
+                </div>
+                <div class="amount-group">
+                    <label id="outputLabel">Approx. USDT</label>
+                    <input type="number" id="amountOutput" placeholder="0.00" readonly>
+                </div>
+            </div>
+            <span id="method-error" class="error-message">Please Select Payment Method First</span>
+        </main>
+        <footer>
+            <button id="backButton" class="btn btn-back">Back</button>
+            <button id="depositButton" class="btn btn-deposit">Deposit</button>
+        </footer>
+    </div>
+    <div id="inquiryPopup" class="popup">
+        <div class="popup-content">
+            <h2>Deposit Confirmation</h2>
+            <p id="inquiryDetails"></p>
+            <div id="timerDisplay"></div>
+            <div class="popup-buttons">
+                <button id="confirmDeposit" class="btn btn-confirm">Confirm</button>
+                <button id="cancelDeposit" class="btn btn-cancel">Cancel</button>
+            </div>
+        </div>
+    </div>
+    <div id="resultPopup" class="popup">
+        <div class="popup-content">
+            <h2 id="resultTitle"></h2>
+            <p id="resultDetails"></p>
+            <button id="closeResult" class="btn btn-confirm">Back to Dashboard</button>
+        </div>
+    </div>
+    <script src="js/deposit.js"></script>
+</body>
+</html>

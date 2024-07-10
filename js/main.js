@@ -17,11 +17,33 @@ document.addEventListener('DOMContentLoaded', function() {
         if (currentUser) {
             document.getElementById('username').textContent = currentUser.username;
             document.getElementById('wallet').textContent = `${currentUser.wallet_address.substr(0, 6)}...${currentUser.wallet_address.substr(-4)}`;
-            document.getElementById('balance').innerHTML = `BALANCE<br>${currentUser.balance_gsx.toFixed(4)} GSX ($${currentUser.balance_usdt.toFixed(2)})`;
+            
+            const GSX_TO_USDT_RATE = 120.9;
+            // Format the balances
+            if (currentUser.balance_gsx !== undefined) {
+                // Format GSX balance
+                const formattedGsx = currentUser.balance_gsx.toLocaleString();
+            
+                // Calculate USDT balance based on GSX balance
+                const usdtBalance = currentUser.balance_gsx * GSX_TO_USDT_RATE;
+            
+                // Format USDT balance
+                const formattedUsdt = usdtBalance.toLocaleString(undefined, { 
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+            
+                // Update the balance display
+                document.getElementById('balance').innerHTML = `BALANCE<br>${formattedGsx} GSX ($${formattedUsdt})`;
+            } else {
+                console.error('GSX balance not found in user data');
+                document.getElementById('balance').innerHTML = 'Balance information unavailable';
+            }
+            
             updateTime();
         } else {
             console.log('No current user');
-            window.location.href = 'login.html';
+            window.location.href = 'index.html';
         }
     }
 
@@ -38,7 +60,7 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('Logout function called');
         sessionStorage.removeItem('currentUser');
         currentUser = null;
-        window.location.href = 'login.html';
+        window.location.href = 'index.html';
     }
 
     // Add event listeners for dashboard buttons
@@ -52,7 +74,13 @@ document.addEventListener('DOMContentLoaded', function() {
         button.addEventListener('click', function() {
             const action = this.id.replace('Button', '');
             console.log(`${action} action clicked`);
-            // Add your action handling logic here
+            
+            if (action === 'deposit') {
+                window.location.href = 'deposit.html';
+            } else {
+                // For other actions, we'll just show an alert
+                alert(`${action.charAt(0).toUpperCase() + action.slice(1)} functionality coming soon!`);
+            }
         });
     });
 
@@ -63,7 +91,7 @@ document.addEventListener('DOMContentLoaded', function() {
             updateDashboard();
             setInterval(updateTime, 1000);
         } else {
-            window.location.href = 'login.html';
+            window.location.href = 'index.html';
         }
     } else {
         console.log('Not on dashboard page');

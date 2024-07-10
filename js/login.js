@@ -1,26 +1,59 @@
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Login script loaded');
 
-    const users = [
-        { id: 1, username: "globestar_liquidity", password: "liquid123", wallet_address: "0xAf1844bfeqRr1u25", balance_gsx: 1012924, balance_usdt: 122462511.6 },
-        { id: 2, username: "globestar_developer", password: "development123", wallet_address: "0xAf1845LyMnRhn3j0", balance_gsx: 215225, balance_usdt: 26020702.5 },
-        { id: 3, username: "bitget_exchange", password: "63TBitGet2024!", wallet_address: "0xAf1841sXb1tG3T1f", balance_gsx: 1050591, balance_usdt: 127016476.1 },
-        { id: 4, username: "mexc_exchange", password: "MEXCtothemoon", wallet_address: "0xAf1843G5JjTafk0t", balance_gsx: 5048, balance_usdt: 610303.2 }
-    ];
+    let users = [];
 
+    async function loadUserData() {
+        try {
+            const response = await fetch('js/users.json');
+            const data = await response.json();
+            users = data.users;
+            console.log('Users data loaded:', users);
+            return true;
+        } catch (error) {
+            console.error('Error loading users data:', error);
+            showError('Failed to load user data. Please refresh the page.');
+            return false;
+        }
+    }
+    
     const loginButton = document.getElementById('loginButton');
     const usernameInput = document.getElementById('username');
     const passwordInput = document.getElementById('password');
-
+    const loadingIndicator = document.getElementById('loadingIndicator');
+    
+    // Set initial states
+    loginButton.disabled = true;
+    loadingIndicator.style.display = 'block';
+    loginButton.textContent = 'Loading...';
+    
+    // Load user data when the page loads
+    window.addEventListener('load', async () => {
+        const dataLoaded = await loadUserData();
+        if (dataLoaded) {
+            loginButton.disabled = false;
+            loadingIndicator.style.display = 'none';
+            loginButton.textContent = 'Login';
+        }
+    });
+    
+    loginButton.addEventListener('click', login);
+    
     function login() {
         console.log('Login function called');
         const username = usernameInput.value;
         const password = passwordInput.value;
         console.log('Entered username:', username);
         console.log('Entered password:', password);
-
+    
+        if (users.length === 0) {
+            console.log('Users data not loaded yet');
+            showError('User data is still loading. Please try again in a moment.');
+            return;
+        }
+    
         const user = users.find(u => u.username === username && u.password === password);
-
+    
         if (user) {
             console.log('User found:', user);
             console.log('Login successful');
@@ -32,7 +65,8 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('User not found');
             showError('Invalid username or password');
         }
-    }
+    }    
+
 
     function showError(message) {
         const errorElement = document.createElement('div');

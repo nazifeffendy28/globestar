@@ -25,14 +25,6 @@ body, html {
     padding: 30px;
     box-sizing: border-box;
 }
-.dashboard-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    width: 100%;
-    margin-bottom: 50px;
-    margin-top: 0px;
-}
 
 h1 {
     font-size: 32px;
@@ -41,69 +33,31 @@ h1 {
     margin-top: 0px;
 }
 
-.user-info {
-    font-size: 20px;
-    text-align: right;
-}
-
-.balance {
-    font-size: 48px;
-    font-weight: 700;
-    text-align: center;
-    margin-bottom: 50px;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-
-.actions {
-    margin: auto;
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 5%;
-    width: 90%;
-    margin-bottom: 240px;
-    --text-color: #ffffff;
-    padding: initial;
-    padding-right: revert;
-}
-
-.action-button {
+.input-group {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    aspect-ratio: 1;
+    width: 100%;
+    max-width: 1062px;
+    margin-bottom: 40px;
+}
+
+.input-group label {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+input {
+    width: 100%;
+    padding: 13px 20px;
     background-color: var(--primary-color);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 12px;
-    font-size: 24px;
-    transition: all 0.3s ease;
-    color: #ffffff;
-    cursor: pointer; /* Add this line to show hand cursor */
+    color: var(--text-color);
+    font-size: 32px;
 }
 
-.action-button i {
-    font-size: 120px;
-    margin-bottom: 30px;
-}
-
-.action-button:hover {
-    box-shadow: 0 0 10px rgb(255, 255, 255);
-}
-
-/* Optional: You can add an active state for when the button is clicked */
-.action-button:active {
-    transform: scale(0.98);
-}
-
-.fa-solid, .fas {
-    font-family: "Font Awesome 6 Free";
-    font-weight: 900;
-    color: white;
-}
-
-.exit-button {
+button {
     width: 269px;
     padding: 13px;
     background-color: var(--primary-color);
@@ -116,8 +70,8 @@ h1 {
     transition: all 0.3s ease;
 }
 
-.exit-button:hover {
-    box-shadow: 0 0 10px rgb(255, 255, 255);
+button:hover {
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
 }
 
 .fade-in {

@@ -12,22 +12,21 @@
         <div class="dashboard-header">
             <h1>Dashboard</h1>
             <div class="user-info">
-                <p>globestar_liquidity</p>
-                <p>0xAf1844bfeqRr1u25</p>
-                <p>15:05:24 (UTC+7) 13/01/2024</p>
+                <span id="username"></span>
+                <br>
+                <span id="wallet"></span>
+                <br>
+                <span id="time"></span>
             </div>
         </div>
-        <div class="balance">
-            <p class="balance-title">BALANCE</p>
-            <p class="balance-amount">0.0 ($0.00)</p>
-        </div>
+        <div class="balance" id="balance">BALANCE<br>0.0 ($0.00)</div>
         <div class="actions">
-            <button class="action-button">Deposit</button>
-            <button class="action-button">Send</button>
-            <button class="action-button">Receive</button>
-            <button class="action-button">History</button>
+            <button class="action-button" id="depositButton"><i class="fas fa-plus"></i>Deposit</button>
+            <button class="action-button" id="sendButton"><i class="fas fa-arrow-up"></i>Send</button>
+            <button class="action-button" id="receiveButton"><i class="fas fa-arrow-down"></i>Receive</button>
+            <button class="action-button" id="historyButton"><i class="fas fa-history"></i>History</button>
         </div>
-        <button id="exitButton">Exit</button>
+            <button class="exit-button" id="logoutButton">Exit</button>
     </div>
     <script src="js/main.js"></script>
 </body>
