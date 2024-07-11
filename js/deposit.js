@@ -169,55 +169,74 @@ document.addEventListener('DOMContentLoaded', function() {
         loadingSpinner.classList.remove('active');
     }
 
-    async function processDeposit() {
-        showLoadingSpinner();
-        inquiryPopup.classList.remove('active');
+    function processDeposit() {
+    showLoadingSpinner();
+    inquiryPopup.classList.remove('active');
 
-        console.log('Awaiting manual approval (Y/N):');
-        const approval = await new Promise(resolve => {
-            const readline = require('readline').createInterface({
-                input: process.stdin,
-                output: process.stdout
-            });
-            readline.question('', ans => {
-                readline.close();
-                resolve(ans.toLowerCase() === 'y');
-            });
-        });
+    let isResolved = false;
+    const timeoutDuration = 15000; // 15 seconds
 
-        hideLoadingSpinner();
-        handleDepositResult(approval);
+    // Promise to handle the approval process
+    const approvalProcess = new Promise((resolve) => {
+        // Simulating backend process
+        setTimeout(() => {
+            if (!isResolved) {
+                // For testing purposes, we'll use a confirm dialog to simulate backend approval
+                // In a real scenario, this would be handled by actual backend logic
+                const approval = confirm("Backend Approval Simulation: Click OK to approve the deposit, or Cancel to reject.");
+                resolve(approval);
+            }
+        }, 3000); // Simulating a 3-second process delay
+    });
+
+    // Promise to handle the timeout
+    const timeout = new Promise((resolve) => {
+        setTimeout(() => {
+            if (!isResolved) {
+                resolve(false);
+            }
+        }, timeoutDuration);
+    });
+
+    // Race between approval process and timeout
+    Promise.race([approvalProcess, timeout])
+        .then((result) => {
+            isResolved = true;
+            hideLoadingSpinner();
+            handleDepositResult(result);
+    });
+    }
+        
+    function handleDepositResult(isSuccessful) {
+    currentTransaction.status = isSuccessful ? 'successful' : 'failed';
+    currentTransaction.transactionId = Date.now().toString();
+
+    const transactions = JSON.parse(localStorage.getItem('transactions') || '[]');
+    transactions.push(currentTransaction);
+    localStorage.setItem('transactions', JSON.stringify(transactions));
+
+    if (isSuccessful) {
+        updateUserBalance();
     }
 
-    function handleDepositResult(isSuccessful) {
-        currentTransaction.status = isSuccessful ? 'successful' : 'failed';
-        currentTransaction.transactionId = Date.now().toString();
+    const resultTitle = document.getElementById('resultTitle');
+    const resultDetails = document.getElementById('resultDetails');
 
-        const transactions = JSON.parse(localStorage.getItem('transactions') || '[]');
-        transactions.push(currentTransaction);
-        localStorage.setItem('transactions', JSON.stringify(transactions));
+    resultTitle.textContent = isSuccessful ? 'Deposit Successful' : 'Deposit Failed';
+    resultDetails.innerHTML = `
+        <p>Deposit Method <span>${currentTransaction.depositMethod}</span></p>
+        <p>To Address <span>${currentTransaction.toAddress}</span></p>
+        <p>Deposit In <span>${currentTransaction.currency}</span></p>
+        <p>Amount ${currentTransaction.currency} <span>${currentTransaction.amount.toFixed(4)}</span></p>
+        <p>Admin Fee <span>${currentTransaction.adminFee.toFixed(4)} ${currentTransaction.currency}</span></p>
+        <p><span>≈ ${(isGSXMode ? currentTransaction.adminFee * GSX_TO_USDT_RATE : currentTransaction.adminFee / GSX_TO_USDT_RATE).toFixed(4)} ${isGSXMode ? 'USDT' : 'GSX'}</span></p>
+        <p>Total Amount <span>${currentTransaction.totalAmount.toFixed(4)} ${currentTransaction.currency}</span></p>
+        <p><span>≈ ${currentTransaction.totalAmountOther.toFixed(4)} ${isGSXMode ? 'USDT' : 'GSX'}</span></p>
+        <p>Transaction ID <span>${currentTransaction.transactionId}</span></p>
+    `;
 
-        if (isSuccessful) {
-            updateUserBalance();
-        }
-
-        const resultTitle = document.getElementById('resultTitle');
-        const resultDetails = document.getElementById('resultDetails');
-
-        resultTitle.textContent = isSuccessful ? 'Deposit Successful' : 'Deposit Failed';
-        resultDetails.innerHTML = `
-            <p>Deposit Method <span>${currentTransaction.depositMethod}</span></p>
-            <p>To Address <span>${currentTransaction.toAddress}</span></p>
-            <p>Deposit In <span>${currentTransaction.currency}</span></p>
-            <p>Amount ${currentTransaction.currency} <span>${currentTransaction.amount.toFixed(4)}</span></p>
-            <p>Admin Fee <span>${currentTransaction.adminFee.toFixed(4)} ${currentTransaction.currency}</span></p>
-            <p><span>≈ ${(isGSXMode ? currentTransaction.adminFee * GSX_TO_USDT_RATE : currentTransaction.adminFee / GSX_TO_USDT_RATE).toFixed(4)} ${isGSXMode ? 'USDT' : 'GSX'}</span></p>
-            <p>Total Amount <span>${currentTransaction.totalAmount.toFixed(4)} ${currentTransaction.currency}</span></p>
-            <p><span>≈ ${currentTransaction.totalAmountOther.toFixed(4)} ${isGSXMode ? 'USDT' : 'GSX'}</span></p>
-            <p>Transaction ID <span>${currentTransaction.transactionId}</span></p>
-        `;
-
-        resultPopup.classList.add('active');
+    document.querySelector('#resultPopup .timestamp').textContent = new Date().toLocaleString('en-US', { timeZone: 'Asia/Bangkok' }) + ' (UTC+7)';
+    resultPopup.classList.add('active');
     }
 
     function updateUserBalance() {
