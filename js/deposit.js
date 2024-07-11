@@ -204,8 +204,8 @@ document.addEventListener('DOMContentLoaded', function() {
             isResolved = true;
             hideLoadingSpinner();
             handleDepositResult(result);
-    });
-    }
+        });
+}
         
     function handleDepositResult(isSuccessful) {
     currentTransaction.status = isSuccessful ? 'successful' : 'failed';
