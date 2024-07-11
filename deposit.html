@@ -52,21 +52,28 @@
     <div id="inquiryPopup" class="popup">
         <div class="popup-content">
             <h2>Deposit Confirmation</h2>
-            <p id="inquiryDetails"></p>
-            <div id="timerDisplay"></div>
+            <div id="inquiryDetails"></div>
             <div class="popup-buttons">
-                <button id="confirmDeposit" class="btn btn-confirm">Confirm</button>
                 <button id="cancelDeposit" class="btn btn-cancel">Cancel</button>
+                <button id="confirmDeposit" class="btn btn-confirm">Confirm</button>
             </div>
         </div>
     </div>
+
     <div id="resultPopup" class="popup">
         <div class="popup-content">
             <h2 id="resultTitle"></h2>
-            <p id="resultDetails"></p>
+            <div id="resultDetails"></div>
+            <p class="copyright">© Globestar 2021</p>
+            <p class="timestamp"></p>
             <button id="closeResult" class="btn btn-confirm">Back to Dashboard</button>
         </div>
     </div>
+
+    <div id="loadingSpinner" class="loading-spinner">
+        <div class="spinner"></div>
+    </div>
+
     <script src="js/deposit.js"></script>
 </body>
 </html>
