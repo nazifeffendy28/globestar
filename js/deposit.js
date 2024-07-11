@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const confirmDeposit = document.getElementById('confirmDeposit');
     const cancelDeposit = document.getElementById('cancelDeposit');
     const closeResult = document.getElementById('closeResult');
+    const loadingSpinner = document.getElementById('loadingSpinner');
 
     const GSX_TO_USDT_RATE = 120.9;
     const MIN_GSX = 0.05;
@@ -131,7 +132,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function showInquiryPopup() {
         const amount = parseFloat(amountInput.value);
         const fees = calculateFees(amount, isGSXMode);
-        const inquiryId = Date.now().toString(); // Simple ID generation
+        const inquiryId = Date.now().toString();
 
         currentTransaction = {
             inquiryId: inquiryId,
@@ -147,49 +148,88 @@ document.addEventListener('DOMContentLoaded', function() {
         };
 
         inquiryDetails.innerHTML = `
-            <p>Deposit Method: <span>${currentTransaction.depositMethod}</span></p>
-            <p>To Address: <span>${currentTransaction.toAddress}</span></p>
-            <p>Amount: <span>${currentTransaction.amount} ${currentTransaction.currency}</span></p>
-            <p>Admin Fee: <span>${currentTransaction.adminFee.toFixed(4)} ${currentTransaction.currency}</span></p>
-            <p>Inquiry ID: <span>${currentTransaction.inquiryId}</span></p>
-            <p>Total Amount Received: <span>${currentTransaction.totalAmount.toFixed(4)} ${currentTransaction.currency}</span></p>
+            <p>Deposit Method <span>${currentTransaction.depositMethod}</span></p>
+            <p>To Address <span>${currentTransaction.toAddress}</span></p>
+            <p>Amount <span>${currentTransaction.amount.toFixed(4)} ${currentTransaction.currency}</span></p>
+            <p>Admin Fee <span>${currentTransaction.adminFee.toFixed(4)} ${currentTransaction.currency}</span></p>
+            <p>Inquiry ID <span>${currentTransaction.inquiryId}</span></p>
+            <p>Total Amount Received <span>${currentTransaction.totalAmount.toFixed(4)} ${currentTransaction.currency}</span></p>
             <p><span>≈ ${currentTransaction.totalAmountOther.toFixed(4)} ${isGSXMode ? 'USDT' : 'GSX'}</span></p>
-            <p>Time (UTC+7): <span>${new Date().toLocaleString('en-US', { timeZone: 'Asia/Bangkok' })}</span></p>
+            <p>Time (UTC+7) <span>${new Date().toLocaleString('en-US', { timeZone: 'Asia/Bangkok' })}</span></p>
         `;
 
-        inquiryPopup.style.display = 'flex';
+        inquiryPopup.classList.add('active');
+    }
+
+    function showLoadingSpinner() {
+        loadingSpinner.classList.add('active');
+    }
+
+    function hideLoadingSpinner() {
+        loadingSpinner.classList.remove('active');
+    }
+
+    async function processDeposit() {
+        showLoadingSpinner();
+        inquiryPopup.classList.remove('active');
+
+        console.log('Awaiting manual approval (Y/N):');
+        const approval = await new Promise(resolve => {
+            const readline = require('readline').createInterface({
+                input: process.stdin,
+                output: process.stdout
+            });
+            readline.question('', ans => {
+                readline.close();
+                resolve(ans.toLowerCase() === 'y');
+            });
+        });
+
+        hideLoadingSpinner();
+        handleDepositResult(approval);
     }
 
     function handleDepositResult(isSuccessful) {
         currentTransaction.status = isSuccessful ? 'successful' : 'failed';
-        currentTransaction.transactionId = Date.now().toString(); // Simple transaction ID generation
+        currentTransaction.transactionId = Date.now().toString();
 
         const transactions = JSON.parse(localStorage.getItem('transactions') || '[]');
         transactions.push(currentTransaction);
         localStorage.setItem('transactions', JSON.stringify(transactions));
+
+        if (isSuccessful) {
+            updateUserBalance();
+        }
 
         const resultTitle = document.getElementById('resultTitle');
         const resultDetails = document.getElementById('resultDetails');
 
         resultTitle.textContent = isSuccessful ? 'Deposit Successful' : 'Deposit Failed';
         resultDetails.innerHTML = `
-            <p>Deposit Method: <span>${currentTransaction.depositMethod}</span></p>
-            <p>To Address: <span>${currentTransaction.toAddress}</span></p>
-            <p>Deposit In: <span>${currentTransaction.currency}</span></p>
-            <p>Amount ${currentTransaction.currency}: <span>${currentTransaction.amount.toFixed(4)}</span></p>
-            <p>Admin Fee: <span>${currentTransaction.adminFee.toFixed(4)} ${currentTransaction.currency}</span></p>
+            <p>Deposit Method <span>${currentTransaction.depositMethod}</span></p>
+            <p>To Address <span>${currentTransaction.toAddress}</span></p>
+            <p>Deposit In <span>${currentTransaction.currency}</span></p>
+            <p>Amount ${currentTransaction.currency} <span>${currentTransaction.amount.toFixed(4)}</span></p>
+            <p>Admin Fee <span>${currentTransaction.adminFee.toFixed(4)} ${currentTransaction.currency}</span></p>
             <p><span>≈ ${(isGSXMode ? currentTransaction.adminFee * GSX_TO_USDT_RATE : currentTransaction.adminFee / GSX_TO_USDT_RATE).toFixed(4)} ${isGSXMode ? 'USDT' : 'GSX'}</span></p>
-            <p>Total Amount: <span>${currentTransaction.totalAmount.toFixed(4)} ${currentTransaction.currency}</span></p>
+            <p>Total Amount <span>${currentTransaction.totalAmount.toFixed(4)} ${currentTransaction.currency}</span></p>
             <p><span>≈ ${currentTransaction.totalAmountOther.toFixed(4)} ${isGSXMode ? 'USDT' : 'GSX'}</span></p>
-            <p>Transaction ID: <span>${currentTransaction.transactionId}</span></p>
-            <p>© Globestar 2021</p>
-            <p>${new Date().toLocaleString('en-US', { timeZone: 'Asia/Bangkok' })} (UTC+7)</p>
+            <p>Transaction ID <span>${currentTransaction.transactionId}</span></p>
         `;
 
-        inquiryPopup.style.display = 'none';
-        resultPopup.style.display = 'flex';
+        resultPopup.classList.add('active');
     }
 
+    function updateUserBalance() {
+        if (isGSXMode) {
+            currentUser.balance_gsx += currentTransaction.totalAmount;
+        } else {
+            currentUser.balance_usdt += currentTransaction.totalAmount;
+        }
+        sessionStorage.setItem('currentUser', JSON.stringify(currentUser));
+    }
+
+    // Event Listeners
     depositMethod.addEventListener('change', updateApproxAmount);
     amountInput.addEventListener('input', updateApproxAmount);
     flipButton.addEventListener('click', flipMode);
@@ -199,21 +239,14 @@ document.addEventListener('DOMContentLoaded', function() {
             showInquiryPopup();
         }
     });
-    confirmDeposit.addEventListener('click', () => {
-        console.log('Awaiting manual approval (Y/N):');
-        setTimeout(() => {
-            const approval = prompt('Enter Y for approval, N for rejection:');
-            handleDepositResult(approval.toLowerCase() === 'y');
-        }, 1000);
-    });
-    cancelDeposit.addEventListener('click', () => {
-        inquiryPopup.style.display = 'none';
-    });
+    confirmDeposit.addEventListener('click', processDeposit);
+    cancelDeposit.addEventListener('click', () => inquiryPopup.classList.remove('active'));
     closeResult.addEventListener('click', () => {
-        resultPopup.style.display = 'none';
+        resultPopup.classList.remove('active');
         window.location.href = 'dashboard.html';
     });
 
+    // Initialize
     if (loadUser()) {
         updateUserInfo();
         setInterval(updateTime, 1000);
