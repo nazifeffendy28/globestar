@@ -76,11 +76,12 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log(`${action} action clicked`);
             
             if (action === 'deposit') {
-                window.location.href = 'deposit.html';
-            } else {
-                // For other actions, we'll just show an alert
-                alert(`${action.charAt(0).toUpperCase() + action.slice(1)} functionality coming soon!`);
-            }
+                    window.location.href = 'deposit.html';
+                } else if (action === 'send') {
+                    window.location.href = 'send.html';
+                } else {
+                    alert(`${action.charAt(0).toUpperCase() + action.slice(1)} functionality coming soon!`);
+                }
         });
     });
 
