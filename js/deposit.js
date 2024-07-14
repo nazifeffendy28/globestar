@@ -1,4 +1,4 @@
-import { getCurrentUser, setCurrentUser, updateBalanceDisplay } from './balance-management.js';
+import { getCurrentUser, setCurrentUser, updateBalanceDisplay, addTransaction } from './balance-management.js';
 
 document.addEventListener('DOMContentLoaded', async function() {
     let currentUser = null;
@@ -136,6 +136,18 @@ document.addEventListener('DOMContentLoaded', async function() {
         validateInput();
     }
 
+    function validateDepositMethod() {
+        const methodError = document.getElementById('method-error');
+        if (!depositMethod.value) {
+            methodError.style.display = 'block';
+            return false;
+        } else {
+            methodError.style.display = 'none';
+            return true;
+        }
+    }
+
+
     function showInquiryPopup() {
         const amount = parseFloat(amountInput.value);
         const fees = calculateFees(amount, isGSXMode);
@@ -235,7 +247,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     function handleDepositResult(isSuccessful, newBalance) {
         currentTransaction.status = isSuccessful ? 'successful' : 'failed';
-        currentTransaction.transactionId = Date.now().toString();
+        currentTransaction.transactionId = Date.now().toString();    
     
         const transactions = JSON.parse(localStorage.getItem('transactions') || '[]');
         transactions.push(currentTransaction);
@@ -265,6 +277,18 @@ document.addEventListener('DOMContentLoaded', async function() {
 
         document.querySelector('#resultPopup .timestamp').textContent = new Date().toLocaleString('en-US', { timeZone: 'Asia/Bangkok' }) + ' (UTC+7)';
         resultPopup.classList.add('active');
+
+        addTransaction({
+            timestamp: new Date().toISOString(),
+            type: 'Deposit',
+            coin: currentTransaction.currency,
+            amount: currentTransaction.amount,
+            address: currentTransaction.toAddress,
+            transactionId: currentTransaction.transactionId,
+            status: isSuccessful ? 'Successful' : 'Failed',
+            depositMethod: currentTransaction.depositMethod
+        }, currentUser.id);
+    
     }
 
     // Event Listeners
@@ -283,7 +307,12 @@ document.addEventListener('DOMContentLoaded', async function() {
         resultPopup.classList.remove('active');
         window.location.href = 'dashboard.html';
     });
-
+    depositButton.addEventListener('click', () => {
+        if (validateDepositMethod() && validateInput()) {
+            showInquiryPopup();
+        }
+    })
+    
     // Initialize the page
     initialize().catch(error => {
         console.error('Initialization error:', error);

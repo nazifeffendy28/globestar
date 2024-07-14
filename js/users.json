@@ -5,21 +5,21 @@
       "username": "globestar_liquidity",
       "password": "liquid123",
       "wallet_address": "0xAf1844bfeqRr1u25",
-      "balance_gsx": 1012924
+      "balance_gsx": 2724171.6982500004
     },
     {
       "id": 2,
       "username": "globestar_developer",
       "password": "development123",
       "wallet_address": "0xAf1845LyMnRhn3j0",
-      "balance_gsx": 215225
+      "balance_gsx": 4797.5
     },
     {
       "id": 3,
       "username": "bitget_exchange",
       "password": "BitgetGSX",
       "wallet_address": "0xAf1841sXb1tG3T1f",
-      "balance_gsx": 1800578.5
+      "balance_gsx": 314204.69960000017
     },
     {
       "id": 4,

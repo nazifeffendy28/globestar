@@ -1,0 +1,21 @@
+└───globestar
+    ├───css
+	|	├───dashboard.css
+	|	├───deposit.css
+	|	├───login.css
+	|	├───send.css
+	|	└───styles.css
+    ├───js
+	|	└───deposit.js
+	|	└───login.js
+	|	└───main.js
+	|	└───send.js
+	|	└───users.json
+    ├───styles
+	|	└───styles.css
+	|
+	├───dashboard.html
+	├───deposit.html
+	├───index.html
+	├───login.html
+	└───send.html

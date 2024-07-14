@@ -1,4 +1,13 @@
-import { getCurrentUser, setCurrentUser, updateBalanceDisplay, getUsers, updateRecipientBalance, deductBalance, addBalance } from './balance-management.js';
+import { 
+    getCurrentUser, 
+    setCurrentUser, 
+    updateBalanceDisplay, 
+    getUsers, 
+    updateRecipientBalance, 
+    deductBalance, 
+    addBalance,
+    addTransaction  // Add this line
+} from './balance-management.js';
 
 document.addEventListener('DOMContentLoaded', function() {
     const GSX_TO_USDT_RATE = 120.9;
@@ -23,7 +32,7 @@ document.addEventListener('DOMContentLoaded', function() {
         closeResult: document.getElementById('closeResult'),
         loadingSpinner: document.getElementById('loadingSpinner'),
         username: document.getElementById('username'),
-        wallet: document.getElementById('wallet'),
+        wallet: document.getElementById('wallet_address'),
         time: document.getElementById('time'),
         amountError: document.getElementById('amount-error'),
         addressError: document.getElementById('address-error'),
@@ -101,23 +110,22 @@ document.addEventListener('DOMContentLoaded', function() {
     function validateWalletAddress() {
         const address = elements.walletAddressInput.value.trim();
         const users = getUsers();
-        console.log('All users:', users);
-        console.log('Input address:', address);
-    
-        const recipientExists = users.some(user => {
-            const match = user.wallet_address.toLowerCase() === address.toLowerCase();
-            console.log(`Comparing ${user.wallet_address.toLowerCase()} with ${address.toLowerCase()}: ${match}`);
-            return match;
-        });
+        
+        const recipientExists = users.some(user => 
+            user.wallet_address.toLowerCase() === address.toLowerCase() &&
+            user.wallet_address.toLowerCase() !== currentUser.wallet_address.toLowerCase()
+        );
         
         if (elements.addressError) {
             if (recipientExists) {
                 elements.addressError.style.display = 'none';
-                console.log('Wallet address found');
+                console.log('Valid recipient wallet address');
+            } else if (address === currentUser.wallet_address) {
+                elements.addressError.textContent = "Cannot send to your own address";
+                elements.addressError.style.display = 'block';
             } else {
                 elements.addressError.textContent = "Wallet address not found";
                 elements.addressError.style.display = 'block';
-                console.log('Wallet address not found');
             }
         }
         return recipientExists;
@@ -226,43 +234,64 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-function handleSendResult(isSuccessful, newSenderBalance, newRecipientBalance, errorMessage = '') {
-    currentTransaction.status = isSuccessful ? 'successful' : 'failed';
-    currentTransaction.transactionId = Date.now().toString();
-
-    const transactions = JSON.parse(localStorage.getItem('transactions') || '[]');
-    transactions.push(currentTransaction);
-    localStorage.setItem('transactions', JSON.stringify(transactions));
-
-    if (isSuccessful) {
-        currentUser.balance_gsx = newSenderBalance;
-        setCurrentUser(currentUser);
-        updateBalanceDisplay();
+    function handleSendResult(isSuccessful, newSenderBalance, newRecipientBalance, errorMessage = '') {
+        console.log('handleSendResult called', { isSuccessful, newSenderBalance, newRecipientBalance, errorMessage });
+        currentTransaction.status = isSuccessful ? 'successful' : 'failed';
+        currentTransaction.transactionId = Date.now().toString();
+    
+        // Add transaction to history
+        addTransaction({
+            timestamp: new Date().toISOString(),
+            type: 'Send',
+            coin: 'GSX',
+            amount: currentTransaction.amount,
+            address: currentTransaction.toAddress,
+            fromAddress: currentTransaction.fromAddress,
+            network: currentTransaction.network,
+            networkFee: currentTransaction.networkFee,
+            totalAmount: currentTransaction.totalAmount,
+            transactionId: currentTransaction.transactionId,
+            status: isSuccessful ? 'Successful' : 'Failed'
+        }, currentUser.id);
+    
+        // Update local storage
+        const transactions = JSON.parse(localStorage.getItem('transactions') || '[]');
+        transactions.push(currentTransaction);
+        localStorage.setItem('transactions', JSON.stringify(transactions));
+    
+        if (isSuccessful) {
+            currentUser.balance_gsx = newSenderBalance;
+            setCurrentUser(currentUser);
+            updateBalanceDisplay();
+        }
+    
+        if (elements.resultTitle) elements.resultTitle.textContent = isSuccessful ? 'Send Successful' : 'Send Failed';
+        if (elements.resultDetails) {
+            elements.resultDetails.innerHTML = `
+                <p>From Address <span>${currentTransaction.fromAddress}</span></p>
+                <p>To Address <span>${currentTransaction.toAddress}</span></p>
+                <p>Network <span>${currentTransaction.network}</span></p>
+                <p>Amount GSX <span>${currentTransaction.amount.toFixed(4)}</span></p>
+                <p>Amount USDT <span>${(currentTransaction.amount * GSX_TO_USDT_RATE).toFixed(4)}</span></p>
+                <p>Network Fee <span>${currentTransaction.networkFee.toFixed(4)} GSX</span></p>
+                <p><span>≈ ${(currentTransaction.networkFee * GSX_TO_USDT_RATE).toFixed(4)} USDT</span></p>
+                <p>Total Amount Send <span>${currentTransaction.totalAmount.toFixed(4)} GSX</span></p>
+                <p><span>≈ ${(currentTransaction.totalAmount * GSX_TO_USDT_RATE).toFixed(4)} USDT</span></p>
+                <p>Transaction ID <span>${currentTransaction.transactionId}</span></p>
+                ${isSuccessful ? '' : `<p>Error: ${errorMessage}</p>`}
+            `;
+        }
+    
+        if (elements.resultTimestamp) {
+            elements.resultTimestamp.textContent = new Date().toLocaleString('en-US', { timeZone: 'Asia/Bangkok' }) + ' (UTC+7)';
+        }
+    
+        if (elements.resultPopup) {
+            elements.resultPopup.classList.add('active');
+        } else {
+            console.error('Result popup element not found');
+        }
     }
-
-
-    if (elements.resultTitle) elements.resultTitle.textContent = isSuccessful ? 'Send Successful' : 'Send Failed';
-    if (elements.resultDetails) {
-        elements.resultDetails.innerHTML = `
-            <p>From Address <span>${currentTransaction.fromAddress}</span></p>
-            <p>To Address <span>${currentTransaction.toAddress}</span></p>
-            <p>Network <span>${currentTransaction.network}</span></p>
-            <p>Amount GSX <span>${currentTransaction.amount.toFixed(4)}</span></p>
-            <p>Amount USDT <span>${(currentTransaction.amount * GSX_TO_USDT_RATE).toFixed(4)}</span></p>
-            <p>Network Fee <span>${currentTransaction.networkFee.toFixed(4)} GSX</span></p>
-            <p><span>≈ ${(currentTransaction.networkFee * GSX_TO_USDT_RATE).toFixed(4)} USDT</span></p>
-            <p>Total Amount Send <span>${currentTransaction.totalAmount.toFixed(4)} GSX</span></p>
-            <p><span>≈ ${(currentTransaction.totalAmount * GSX_TO_USDT_RATE).toFixed(4)} USDT</span></p>
-            <p>Transaction ID <span>${currentTransaction.transactionId}</span></p>
-            ${isSuccessful ? '' : `<p>Error: ${errorMessage}</p>`}
-        `;
-    }
-
-    if (elements.resultTimestamp) {
-        elements.resultTimestamp.textContent = new Date().toLocaleString('en-US', { timeZone: 'Asia/Bangkok' }) + ' (UTC+7)';
-    }
-    elements.resultPopup.classList.add('active');
-}
 
     function handleCloseResult() {
         elements.resultPopup.classList.remove('active');

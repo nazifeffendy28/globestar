@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Receive</title>
+    <link rel="stylesheet" href="css/receive.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div id="receivePage" class="container fade-in">
+        <div class="receive-header">
+            <h1>Receive</h1>
+            <div class="user-info">
+                <span id="username"></span>
+                <span id="wallet"></span>
+                <span id="time"></span>
+            </div>
+        </div>
+
+        <main>
+            <div class="form-group">
+                <label for="networkSelect">Network</label>
+                <select id="networkSelect">
+                    <option value="GSX">GSX</option>
+                    <option value="TRC20">TRC20</option>
+                    <option value="TON">TON</option>
+                    <option value="SOL">SOL</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="walletAddress">Wallet Address</label>
+                <input type="text" id="walletAddress" readonly>
+            </div>
+
+            <p class="caution">
+                <i class="fas fa-exclamation-circle"></i>
+                Caution! You may lose your assets if you choose an incompatible network.
+              </p>
+        </main>
+
+        <button id="backButton">Back</button>
+    </div>
+
+    <script type="module" src="js/receive.js"></script>
+</body>
+</html>

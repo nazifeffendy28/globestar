@@ -118,14 +118,14 @@ document.addEventListener('DOMContentLoaded', async function() {
         if (receiveButton) {
             receiveButton.addEventListener('click', () => {
                 console.log('Receive button clicked');
-                alert('Receive functionality coming soon!');
+                window.location.href = 'receive.html';
             });
         }
     
         if (historyButton) {
             historyButton.addEventListener('click', () => {
                 console.log('History button clicked');
-                alert('History functionality coming soon!');
+                window.location.href = 'history.html';
             });
         }
     }

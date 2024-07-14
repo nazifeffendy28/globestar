@@ -1,5 +1,6 @@
 let currentUser = null;
 let users = [];
+let transactionHistory = JSON.parse(localStorage.getItem('transactionHistory') || '[]');
 
 const GSX_TO_USDT_RATE = 120.9;
 const USERS_STORAGE_KEY = 'users';
@@ -161,3 +162,15 @@ export function addBalance(address, amount) {
     return false;
 }
 
+export function addTransaction(transaction, userId) {
+    const key = `transactionHistory_${userId}`;
+    const transactions = JSON.parse(localStorage.getItem(key) || '[]');
+    transactions.push(transaction);
+    localStorage.setItem(key, JSON.stringify(transactions));
+}
+
+export function getTransactionHistory(userId) {
+    const key = `transactionHistory_${userId}`;
+    return JSON.parse(localStorage.getItem(key) || '[]');
+}
+  

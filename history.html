@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transaction History</title>
+    <link rel="stylesheet" href="css/history.css">
+</head>
+<body>
+    <div id="historyPage" class="container fade-in">
+        <div class="history-header">
+            <h1>History</h1>
+            <div class="user-info">
+                <span id="username"></span>
+                <span id="wallet"></span>
+                <span id="time"></span>
+            </div>
+        </div>
+        <main>
+            <table id="transactionTable">
+                <thead>
+                    <tr>
+                        <th>Time</th>
+                        <th>Type</th>
+                        <th>Coin</th>
+                        <th>Quantity</th>
+                        <th>Address</th>
+                        <th>Transaction ID</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="transactionBody"></tbody>
+            </table>
+        </main>
+        <button id="backButton">Back</button>
+    </div>
+    
+    <div id="receiptPopup" class="popup">
+        <div class="popup-content">
+            <h2 id="receiptTitle"></h2>
+            <div id="receiptDetails"></div>
+            <div class="popup-buttons">
+                <button id="closeReceipt" class="btn">Back to Dashboard</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="js/history.js"></script>
+</body>
+</html>
