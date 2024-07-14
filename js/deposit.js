@@ -1,4 +1,6 @@
-document.addEventListener('DOMContentLoaded', function() {
+import { getCurrentUser, setCurrentUser, updateBalanceDisplay } from './balance-management.js';
+
+document.addEventListener('DOMContentLoaded', async function() {
     let currentUser = null;
     const depositMethod = document.getElementById('depositMethod');
     const amountInput = document.getElementById('amountInput');
@@ -26,13 +28,17 @@ document.addEventListener('DOMContentLoaded', function() {
     let isGSXMode = true;
     let currentTransaction = {};
 
-    function loadUser() {
-        const userJson = sessionStorage.getItem('currentUser');
-        if (userJson) {
-            currentUser = JSON.parse(userJson);
-            return true;
+    async function initialize() {
+        currentUser = getCurrentUser();
+        if (currentUser) {
+            updateUserInfo();
+            setInterval(updateTime, 1000);
+            updateApproxAmount();
+        } else {
+            console.log('User not authenticated, redirecting to login page');
+            window.location.href = 'index.html';
+            return;
         }
-        return false;
     }
 
     function updateUserInfo() {
@@ -40,6 +46,7 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('username').textContent = currentUser.username;
             document.getElementById('wallet').textContent = `${currentUser.wallet_address.substr(0, 6)}...${currentUser.wallet_address.substr(-4)}`;
             updateTime();
+            updateBalanceDisplay();
         } else {
             window.location.href = 'index.html';
         }
@@ -169,83 +176,95 @@ document.addEventListener('DOMContentLoaded', function() {
         loadingSpinner.classList.remove('active');
     }
 
-    function processDeposit() {
-    showLoadingSpinner();
-    inquiryPopup.classList.remove('active');
-
-    let isResolved = false;
-    const timeoutDuration = 15000; // 15 seconds
-
-    // Promise to handle the approval process
-    const approvalProcess = new Promise((resolve) => {
-        // Simulating backend process
-        setTimeout(() => {
-            if (!isResolved) {
-                // For testing purposes, we'll use a confirm dialog to simulate backend approval
-                // In a real scenario, this would be handled by actual backend logic
-                const approval = confirm("Backend Approval Simulation: Click OK to approve the deposit, or Cancel to reject.");
-                resolve(approval);
-            }
-        }, 3000); // Simulating a 3-second process delay
-    });
-
-    // Promise to handle the timeout
-    const timeout = new Promise((resolve) => {
-        setTimeout(() => {
-            if (!isResolved) {
-                resolve(false);
-            }
-        }, timeoutDuration);
-    });
-
-    // Race between approval process and timeout
-    Promise.race([approvalProcess, timeout])
-        .then((result) => {
-            isResolved = true;
-            hideLoadingSpinner();
-            handleDepositResult(result);
+    async function processDeposit() {
+        showLoadingSpinner();
+        inquiryPopup.classList.remove('active');
+    
+        let isResolved = false;
+        const timeoutDuration = 15000; // 15 seconds
+    
+        const approvalProcess = new Promise((resolve) => {
+            setTimeout(() => {
+                if (!isResolved) {
+                    const approval = confirm("Backend Approval Simulation: Click OK to approve the deposit, or Cancel to reject.");
+                    resolve(approval);
+                }
+            }, 3000);
         });
-}
-        
-    function handleDepositResult(isSuccessful) {
-    currentTransaction.status = isSuccessful ? 'successful' : 'failed';
-    currentTransaction.transactionId = Date.now().toString();
-
-    const transactions = JSON.parse(localStorage.getItem('transactions') || '[]');
-    transactions.push(currentTransaction);
-    localStorage.setItem('transactions', JSON.stringify(transactions));
-
-    if (isSuccessful) {
-        updateUserBalance();
-    }
-
-    const resultTitle = document.getElementById('resultTitle');
-    const resultDetails = document.getElementById('resultDetails');
-
-    resultTitle.textContent = isSuccessful ? 'Deposit Successful' : 'Deposit Failed';
-    resultDetails.innerHTML = `
-        <p>Deposit Method <span>${currentTransaction.depositMethod}</span></p>
-        <p>To Address <span>${currentTransaction.toAddress}</span></p>
-        <p>Deposit In <span>${currentTransaction.currency}</span></p>
-        <p>Amount ${currentTransaction.currency} <span>${currentTransaction.amount.toFixed(4)}</span></p>
-        <p>Admin Fee <span>${currentTransaction.adminFee.toFixed(4)} ${currentTransaction.currency}</span></p>
-        <p><span>≈ ${(isGSXMode ? currentTransaction.adminFee * GSX_TO_USDT_RATE : currentTransaction.adminFee / GSX_TO_USDT_RATE).toFixed(4)} ${isGSXMode ? 'USDT' : 'GSX'}</span></p>
-        <p>Total Amount <span>${currentTransaction.totalAmount.toFixed(4)} ${currentTransaction.currency}</span></p>
-        <p><span>≈ ${currentTransaction.totalAmountOther.toFixed(4)} ${isGSXMode ? 'USDT' : 'GSX'}</span></p>
-        <p>Transaction ID <span>${currentTransaction.transactionId}</span></p>
-    `;
-
-    document.querySelector('#resultPopup .timestamp').textContent = new Date().toLocaleString('en-US', { timeZone: 'Asia/Bangkok' }) + ' (UTC+7)';
-    resultPopup.classList.add('active');
-    }
-
-    function updateUserBalance() {
-        if (isGSXMode) {
-            currentUser.balance_gsx += currentTransaction.totalAmount;
-        } else {
-            currentUser.balance_usdt += currentTransaction.totalAmount;
+    
+        const timeout = new Promise((resolve) => {
+            setTimeout(() => {
+                if (!isResolved) {
+                    resolve(false);
+                }
+            }, timeoutDuration);
+        });
+    
+        try {
+            const result = await Promise.race([approvalProcess, timeout]);
+            isResolved = true;
+    
+            if (result) {
+                // If approved, make the API call
+                const response = await fetch('http://localhost:5000/api/deposit', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(currentTransaction),
+                });
+    
+                const apiResult = await response.json();
+    
+                if (apiResult.status === 'success') {
+                    handleDepositResult(true, apiResult.newBalance);
+                } else {
+                    handleDepositResult(false);
+                }
+            } else {
+                // If not approved or timed out
+                handleDepositResult(false);
+            }
+        } catch (error) {
+            console.error('Error processing deposit:', error);
+            handleDepositResult(false);
+        } finally {
+            hideLoadingSpinner();
         }
-        sessionStorage.setItem('currentUser', JSON.stringify(currentUser));
+    }
+
+    function handleDepositResult(isSuccessful, newBalance) {
+        currentTransaction.status = isSuccessful ? 'successful' : 'failed';
+        currentTransaction.transactionId = Date.now().toString();
+    
+        const transactions = JSON.parse(localStorage.getItem('transactions') || '[]');
+        transactions.push(currentTransaction);
+        localStorage.setItem('transactions', JSON.stringify(transactions));
+    
+        if (isSuccessful) {
+            currentUser.balance_gsx = newBalance;
+            setCurrentUser(currentUser);
+            updateBalanceDisplay();
+        }
+    
+        const resultTitle = document.getElementById('resultTitle');
+        const resultDetails = document.getElementById('resultDetails');
+    
+        resultTitle.textContent = isSuccessful ? 'Deposit Successful' : 'Deposit Failed';
+        resultDetails.innerHTML = `
+            <p>Deposit Method <span>${currentTransaction.depositMethod}</span></p>
+            <p>To Address <span>${currentTransaction.toAddress}</span></p>
+            <p>Deposit In <span>${currentTransaction.currency}</span></p>
+            <p>Amount ${currentTransaction.currency} <span>${currentTransaction.amount.toFixed(4)}</span></p>
+            <p>Admin Fee <span>${currentTransaction.adminFee.toFixed(4)} ${currentTransaction.currency}</span></p>
+            <p><span>≈ ${(isGSXMode ? currentTransaction.adminFee * GSX_TO_USDT_RATE : currentTransaction.adminFee / GSX_TO_USDT_RATE).toFixed(4)} ${isGSXMode ? 'USDT' : 'GSX'}</span></p>
+            <p>Total Amount <span>${currentTransaction.totalAmount.toFixed(4)} ${currentTransaction.currency}</span></p>
+            <p><span>≈ ${currentTransaction.totalAmountOther.toFixed(4)} ${isGSXMode ? 'USDT' : 'GSX'}</span></p>
+            <p>Transaction ID <span>${currentTransaction.transactionId}</span></p>
+        `;
+
+        document.querySelector('#resultPopup .timestamp').textContent = new Date().toLocaleString('en-US', { timeZone: 'Asia/Bangkok' }) + ' (UTC+7)';
+        resultPopup.classList.add('active');
     }
 
     // Event Listeners
@@ -265,13 +284,9 @@ document.addEventListener('DOMContentLoaded', function() {
         window.location.href = 'dashboard.html';
     });
 
-    // Initialize
-    if (loadUser()) {
-        updateUserInfo();
-        setInterval(updateTime, 1000);
-    } else {
-        window.location.href = 'index.html';
-    }
-
-    updateApproxAmount();
+    // Initialize the page
+    initialize().catch(error => {
+        console.error('Initialization error:', error);
+        // Handle initialization error (e.g., show an error message to the user)
+    });
 });

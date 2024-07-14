@@ -19,22 +19,21 @@
       "username": "bitget_exchange",
       "password": "BitgetGSX",
       "wallet_address": "0xAf1841sXb1tG3T1f",
-      "balance_gsx": 1050591
+      "balance_gsx": 1800578.5
     },
     {
       "id": 4,
       "username": "mexc_exchange",
       "password": "MEXCtothemoon",
       "wallet_address": "0xAf1843G5JjTafk0t",
-      "balance_gsx": 5048
+      "balance_gsx": 9048.199799999999
     },
     {
       "id": 5,
       "username": "nazifeffendy",
       "password": "skilliz09",
       "wallet_address": "0xAf1877e36dVlqx4u",
-      "balance_gsx": 660814
+      "balance_gsx": 10594.99979999999
     }
-
   ]
 }

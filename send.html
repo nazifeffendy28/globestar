@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Globestar - Send</title>
+    <title>Send - Globestar</title>
+    <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/send.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
     <div id="sendPage" class="container fade-in">
@@ -13,42 +13,47 @@
             <h1>Send</h1>
             <div class="user-info">
                 <span id="username"></span>
-                <span id="wallet"></span>
+                <span id="wallet_address"></span>
                 <span id="time"></span>
             </div>
         </div>
-        <main>
+
+        <main role="main">
             <div class="form-group">
                 <label for="networkSelect">Network</label>
                 <select id="networkSelect">
-                    <option value="">-</option>
+                    <option value="">Select a network</option>
                     <option value="GSX">GSX</option>
                     <option value="TRC20">TRC20</option>
                     <option value="TON">TON</option>
                     <option value="SOL">SOL</option>
                 </select>
-                <span id="network-error" class="error-message">Please Select Network First</span>
+                <span id="network-error" class="error-message"></span>
             </div>
+
             <div class="form-group">
                 <label for="walletAddressInput">Wallet Address</label>
-                <input type="text" id="walletAddressInput" placeholder="0xAf1845LyMnRhn3j0">
-                <span id="address-error" class="error-message">Wallet Address Not Found</span>
+                <input type="text" id="walletAddressInput">
+                <span id="address-error" class="error-message"></span>
             </div>
+
             <div class="amount-section">
                 <div class="amount-group">
                     <label for="amountInput">Amount GSX</label>
-                    <input type="number" id="amountInput" placeholder="0.00" step="0.0001" min="0.05">
-                    <span id="amount-error" class="error-message">Minimum Send is 0.05 GSX</span>
+                    <input type="number" id="amountInput" step="0.0001" min="0.05">
+                    <span id="amount-error" class="error-message"></span>
                 </div>
+
                 <div class="amount-group">
                     <label for="amountOutput">Approx. USDT</label>
-                    <input type="number" id="amountOutput" placeholder="0.00" readonly>
+                    <input type="text" id="amountOutput" readonly>
                 </div>
             </div>
         </main>
+
         <footer>
-            <button id="backButton" class="btn">Back</button>
-            <button id="sendButton" class="btn">Send</button>
+            <button id="backButton">Back</button>
+            <button id="sendButton">Send</button>
         </footer>
     </div>
 
@@ -57,8 +62,8 @@
             <h2>Send Confirmation</h2>
             <div id="inquiryDetails"></div>
             <div class="popup-buttons">
-                <button id="cancelSend" class="btn">Cancel</button>
-                <button id="confirmSend" class="btn">Confirm</button>
+                <button id="cancelSend" class="btn btn-cancel">Cancel</button>
+                <button id="confirmSend" class="btn btn-confirm">Confirm</button>
             </div>
         </div>
     </div>
@@ -77,6 +82,7 @@
         <div class="spinner"></div>
     </div>
 
-    <script src="js/send.js"></script>
+    <script type="module" src="js/balance-management.js"></script>
+    <script type="module" src="js/send.js"></script>
 </body>
 </html>

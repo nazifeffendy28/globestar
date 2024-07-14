@@ -86,6 +86,7 @@ select:hover, input:hover, select:focus, input:focus {
 .amount-section {
     display: flex;
     justify-content: space-between;
+    gap: 20px;
 }
 
 .amount-group {

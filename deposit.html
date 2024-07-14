@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Globestar - Deposit</title>
+    <title>Deposit - Globestar</title>
     <link rel="stylesheet" href="css/deposit.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <div id="depositPage" class="container fade-in">
@@ -17,38 +17,45 @@
                 <span id="time"></span>
             </div>
         </div>
-        <main>
+
+        <main role="main">
             <div class="form-group">
                 <label for="depositMethod">Deposit Method</label>
                 <select id="depositMethod">
-                    <option value="">-</option>
-                    <option value="bankTransfer">Bank Transfer</option>
+                    <option value="">Select a method</option>
+                    <option value="bank_transfer">Bank Transfer</option>
                     <option value="paypal">Paypal</option>
                     <option value="moonpay">Moonpay</option>
-                    <option value="creditCard">Credit Card</option>
+                    <option value="credit_card">Credit Card</option>
                 </select>
+                <span id="method-error" class="error-message"></span>
             </div>
+
             <div class="amount-section">
                 <div class="amount-group">
-                    <label id="inputLabel">Amount GSX</label>
+                    <label id="inputLabel" for="amountInput">Amount GSX</label>
                     <div class="input-group">
-                        <input type="number" id="amountInput" placeholder="0.00" step="0.0001" min="0.05">
-                        <button id="flipButton" class="flip-button"><i class="fas fa-exchange-alt"></i></button>
+                        <input type="number" id="amountInput" step="0.0001" min="0.05">
+                        <button id="flipButton" class="flip-button">
+                            <i class="fas fa-refresh"></i>
+                        </button>
                     </div>
-                    <span id="input-error" class="error-message">Minimum Deposit is 0.05 GSX</span>
+                    <span id="input-error" class="error-message"></span>
                 </div>
+
                 <div class="amount-group">
-                    <label id="outputLabel">Approx. USDT</label>
-                    <input type="number" id="amountOutput" placeholder="0.00" readonly>
+                    <label id="outputLabel" for="amountOutput">Approx. USDT</label>
+                    <input type="text" id="amountOutput" readonly>
                 </div>
             </div>
-            <span id="method-error" class="error-message">Please Select Payment Method First</span>
         </main>
+
         <footer>
-            <button id="backButton" class="btn btn-back">Back</button>
-            <button id="depositButton" class="btn btn-deposit">Deposit</button>
+            <button id="backButton">Back</button>
+            <button id="depositButton">Deposit</button>
         </footer>
     </div>
+
     <div id="inquiryPopup" class="popup">
         <div class="popup-content">
             <h2>Deposit Confirmation</h2>
@@ -66,7 +73,7 @@
             <div id="resultDetails"></div>
             <p class="copyright">© Globestar 2021</p>
             <p class="timestamp"></p>
-            <button id="closeResult" class="btn btn-confirm">Back to Dashboard</button>
+            <button id="closeResult" class="btn">Back to Dashboard</button>
         </div>
     </div>
 
@@ -74,6 +81,7 @@
         <div class="spinner"></div>
     </div>
 
-    <script src="js/deposit.js"></script>
+    <script type="module" src="js/balance-management.js"></script>
+    <script type="module" src="js/deposit.js"></script>
 </body>
 </html>

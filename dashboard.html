@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Globestar - Dashboard</title>
+    <title>Dashboard - Globestar</title>
     <link rel="stylesheet" href="css/dashboard.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <script src="https://kit.fontawesome.com/your-fontawesome-kit.js" crossorigin="anonymous"></script>
 </head>
 <body>
     <div id="dashboardPage" class="container fade-in">
@@ -13,21 +14,37 @@
             <h1>Dashboard</h1>
             <div class="user-info">
                 <span id="username"></span>
-                <br>
                 <span id="wallet"></span>
-                <br>
                 <span id="time"></span>
             </div>
         </div>
-        <div class="balance" id="balance">BALANCE<br>0.0 ($0.00)</div>
-        <div class="actions">
-            <button class="action-button" id="depositButton"><i class="fas fa-plus"></i>Deposit</button>
-            <button class="action-button" id="sendButton"><i class="fas fa-arrow-up"></i>Send</button>
-            <button class="action-button" id="receiveButton"><i class="fas fa-arrow-down"></i>Receive</button>
-            <button class="action-button" id="historyButton"><i class="fas fa-history"></i>History</button>
+
+        <div id="balance" class="balance">
+            BALANCE<br>
+            <span id="balanceAmount">0.0</span> GSX ($<span id="balanceUSD">0.00</span>)
         </div>
-            <button class="exit-button" id="logoutButton">Exit</button>
+
+        <div class="actions">
+            <div class="action-button" id="depositButton">
+                <i class="fas fa-plus"></i>
+                Deposit
+            </div>
+            <div class="action-button" id="sendButton">
+                <i class="fas fa-arrow-down"></i>
+                Send
+            </div>
+            <div class="action-button" id="receiveButton">
+                <i class="fas fa-arrow-up"></i>
+                Receive
+            </div>
+            <div class="action-button" id="historyButton">
+                <i class="fas fa-history"></i>
+                History
+            </div>
+        </div>
+        <button id="logoutButton" class="exit-button">Exit</button>
     </div>
-    <script src="js/main.js"></script>
+    <script type="module" src="js/balance-management.js"></script>
+    <script type="module" src="js/main.js"></script>
 </body>
 </html>

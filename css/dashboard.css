@@ -46,6 +46,11 @@ h1 {
     text-align: right;
 }
 
+.user-info span {
+    display: block;
+    margin-bottom: 5px;
+}
+
 .balance {
     font-size: 48px;
     font-weight: 700;
@@ -118,6 +123,13 @@ h1 {
 
 .exit-button:hover {
     box-shadow: 0 0 10px rgb(255, 255, 255);
+}
+
+footer {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    margin-top: auto;
 }
 
 .fade-in {

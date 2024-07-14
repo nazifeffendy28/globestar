@@ -3,25 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Globestar - Login</title>
+    <title>Login - Globestar</title>
     <link rel="stylesheet" href="css/login.css">
 </head>
 <body>
-    <div id="loginPage" class="container fade-in">
+    <div class="container">
         <h1>Login</h1>
+    
         <div class="input-group">
             <label for="username">Username</label>
-            <input type="text" id="username" placeholder="Username">
+            <input type="text" id="username" name="username" required>
         </div>
+    
         <div class="input-group">
             <label for="password">Password</label>
-            <input type="password" id="password" placeholder="Password">
+            <input type="password" id="password" name="password" required>
         </div>
-        <button id="loginButton">Login</button>
-        <div id="errorContainer"></div>
-        <div id="loadingIndicator" style="display: none;">Loading...</div>
+    
+        <button>Login</button>
+    
+        <div id="loadingIndicator" style="display: none;">
+            Loading...
+        </div>
+    
+        <div id="errorMessage" style="display: none; color: red;">
+        </div>
     </div>
-    <script src="js/login.js"></script>
-    <script src="js/users.json"></script>
 </body>
 </html>

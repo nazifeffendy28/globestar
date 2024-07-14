@@ -26,6 +26,7 @@ body, html {
     height: 100%;
     padding: 30px;
     box-sizing: border-box;
+    min-height: 100vh;
 }
 
 .deposit-header {
@@ -53,8 +54,7 @@ h1 {
 }
 
 main {
-    width: 100%;
-    max-width: 1062px;
+    flex: 1; /* This will make the main content area grow to fill available space */
 }
 
 .form-group {
@@ -86,6 +86,7 @@ select:hover, input:hover, select:focus, input:focus {
 .amount-section {
     display: flex;
     justify-content: space-between;
+    gap: 20px;
 }
 
 .amount-group {
@@ -95,6 +96,7 @@ select:hover, input:hover, select:focus, input:focus {
 .input-group {
     display: flex;
     align-items: center;
+    gap: 10px;
 }
 
 .input-group input {
@@ -201,13 +203,47 @@ footer {
     transition: all 0.3s ease;
 }
 
+#backButton {
+    width: 269px;
+    padding: 13px;
+    background-color: var(--primary-color);
+    color: var(--text-color);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    font-size: 32px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#backButton:hover {
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+}
+
+#depositButton {
+    width: 269px;
+    padding: 13px;
+    background-color: var(--primary-color);
+    color: var(--text-color);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    font-size: 32px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#depositButton:hover {
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+}
+
 .btn-confirm, .btn-cancel {
     background-color: var(--button-bg);
     color: var(--text-color);
 }
 
 .btn:hover {
-    opacity: 0.8;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
 }
 
 .copyright, .timestamp {

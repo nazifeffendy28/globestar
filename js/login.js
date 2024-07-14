@@ -1,98 +1,93 @@
+import { setCurrentUser, getCurrentUser } from './balance-management.js';
+
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Login script loaded');
-
-    let users = [];
-
-    async function loadUserData() {
-        try {
-            const response = await fetch('js/users.json');
-            const data = await response.json();
-            users = data.users;
-            console.log('Users data loaded:', users);
-            return true;
-        } catch (error) {
-            console.error('Error loading users data:', error);
-            showError('Failed to load user data. Please refresh the page.');
-            return false;
-        }
-    }
-    
-    const loginButton = document.getElementById('loginButton');
-    const usernameInput = document.getElementById('username');
-    const passwordInput = document.getElementById('password');
+    const loginButton = document.querySelector('button') || document.querySelector('.input-group button');
+    const usernameInput = document.querySelector('input[type="text"]') || document.querySelector('.input-group:nth-child(1) input');
+    const passwordInput = document.querySelector('input[type="password"]') || document.querySelector('.input-group:nth-child(2) input');
     const loadingIndicator = document.getElementById('loadingIndicator');
-    
-    // Set initial states
-    loginButton.disabled = true;
-    loadingIndicator.style.display = 'block';
-    loginButton.textContent = 'Loading...';
-    
-    // Load user data when the page loads
-    window.addEventListener('load', async () => {
-        const dataLoaded = await loadUserData();
-        if (dataLoaded) {
-            loginButton.disabled = false;
-            loadingIndicator.style.display = 'none';
-            loginButton.textContent = 'Login';
-        }
-    });
-    
-    loginButton.addEventListener('click', login);
-    
-    function login() {
-        console.log('Login function called');
-        const username = usernameInput.value;
-        const password = passwordInput.value;
-        console.log('Entered username:', username);
-        console.log('Entered password:', password);
-    
-        if (users.length === 0) {
-            console.log('Users data not loaded yet');
-            showError('User data is still loading. Please try again in a moment.');
-            return;
-        }
-    
-        const user = users.find(u => u.username === username && u.password === password);
-    
-        if (user) {
-            console.log('User found:', user);
-            console.log('Login successful');
-            // Store user data in sessionStorage
-            sessionStorage.setItem('currentUser', JSON.stringify(user));
-            // Redirect to dashboard
-            window.location.href = 'dashboard.html';
-        } else {
-            console.log('User not found');
-            showError('Invalid username or password');
-        }
-    }    
+    const errorMessage = document.getElementById('errorMessage');
 
+    console.log('Login button:', loginButton);
+    console.log('Username input:', usernameInput);
+    console.log('Password input:', passwordInput);
+    console.log('Loading indicator:', loadingIndicator);
+    console.log('Error message:', errorMessage);
 
-    function showError(message) {
-        const errorElement = document.createElement('div');
-        errorElement.className = 'error-message';
-        errorElement.textContent = message;
-        errorElement.style.color = 'red';
-        errorElement.style.marginTop = '10px';
-
-        const container = document.querySelector('.container');
-        const existingError = container.querySelector('.error-message');
-        if (existingError) {
-            container.removeChild(existingError);
-        }
-        container.appendChild(errorElement);
-    }
-
-    if (loginButton) {
-        loginButton.addEventListener('click', login);
-    } else {
+    if (!loginButton) {
         console.error('Login button not found');
     }
+    if (!usernameInput) {
+        console.error('Username input not found');
+    }
+    if (!passwordInput) {
+        console.error('Password input not found');
+    }
 
-    // Add event listener for Enter key press
-    document.addEventListener('keypress', function(event) {
-        if (event.key === 'Enter') {
-            login();
+    if (!loginButton || !usernameInput || !passwordInput) {
+        console.error('Some required DOM elements are missing. Login functionality may not work correctly.');
+        return;
+    }
+
+    loginButton.addEventListener('click', handleLogin);
+
+    async function handleLogin() {
+        if (loadingIndicator) loadingIndicator.style.display = 'block';
+        if (errorMessage) {
+            errorMessage.style.display = 'none';
+            errorMessage.textContent = '';
         }
-    });
+
+        const username = usernameInput.value.trim();
+        const password = passwordInput.value;
+
+        if (!username || !password) {
+            showError('Please enter both username and password.');
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ username, password }),
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            if (data.status === 'success') {
+                setCurrentUser(data.user);
+                window.location.href = 'dashboard.html';
+            } else {
+                throw new Error(data.message || 'Invalid username or password');
+            }
+        } catch (error) {
+            console.error('Login error:', error);
+            showError(error.message);
+        } finally {
+            if (loadingIndicator) loadingIndicator.style.display = 'none';
+        }
+    }
+
+    function showError(message) {
+        console.error('Login error:', message);
+        if (errorMessage) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+        } else {
+            alert(message);  // Fallback to alert if errorMessage element is not found
+        }
+        if (loadingIndicator) loadingIndicator.style.display = 'none';
+    }
+
+    // Check if user is already logged in
+    const currentUser = getCurrentUser();
+    if (currentUser) {
+        window.location.href = 'dashboard.html';
+    }
 });

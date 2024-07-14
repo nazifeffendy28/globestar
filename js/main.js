@@ -1,49 +1,76 @@
-document.addEventListener('DOMContentLoaded', function() {
+import * as balanceManagement from './balance-management.js';
+
+document.addEventListener('DOMContentLoaded', async function() {
     console.log('Main script loaded');
 
-    let currentUser = null;
+    async function initialize() {
+        try {
+            await balanceManagement.initializeUserData();
+            if (checkLoginState()) {
+                await refreshUserData();
+                updateDashboard();
+                setInterval(updateTime, 1000);
+            } else {
+                console.log('No current user');
+                window.location.href = 'index.html';
+            }
+        } catch (error) {
+            console.error('Initialization error:', error);
+        }
+    }
 
-    function loadUser() {
-        const userJson = sessionStorage.getItem('currentUser');
+    function checkLoginState() {
+        const userJson = localStorage.getItem('currentUser');
         if (userJson) {
-            currentUser = JSON.parse(userJson);
+            const user = JSON.parse(userJson);
+            balanceManagement.setCurrentUser(user);
             return true;
         }
         return false;
     }
 
+    async function refreshUserData() {
+        const currentUser = balanceManagement.getCurrentUser();
+        if (currentUser) {
+            try {
+                const response = await fetch(`http://localhost:5000/api/user/${currentUser.wallet_address}`);
+                const data = await response.json();
+                if (data.status === 'success') {
+                    balanceManagement.setCurrentUser(data.user);
+                } else {
+                    console.error('Failed to refresh user data:', data.message);
+                }
+            } catch (error) {
+                console.error('Error refreshing user data:', error);
+            }
+        }
+    }
+
     function updateDashboard() {
         console.log('Updating dashboard');
+        const currentUser = balanceManagement.getCurrentUser();
         if (currentUser) {
             document.getElementById('username').textContent = currentUser.username;
             document.getElementById('wallet').textContent = `${currentUser.wallet_address.substr(0, 6)}...${currentUser.wallet_address.substr(-4)}`;
-            
-            const GSX_TO_USDT_RATE = 120.9;
-            // Format the balances
-            if (currentUser.balance_gsx !== undefined) {
-                // Format GSX balance
-                const formattedGsx = currentUser.balance_gsx.toLocaleString();
-            
-                // Calculate USDT balance based on GSX balance
-                const usdtBalance = currentUser.balance_gsx * GSX_TO_USDT_RATE;
-            
-                // Format USDT balance
-                const formattedUsdt = usdtBalance.toLocaleString(undefined, { 
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2
-                });
-            
-                // Update the balance display
-                document.getElementById('balance').innerHTML = `BALANCE<br>${formattedGsx} GSX ($${formattedUsdt})`;
-            } else {
-                console.error('GSX balance not found in user data');
-                document.getElementById('balance').innerHTML = 'Balance information unavailable';
-            }
-            
+            updateBalanceDisplay(currentUser);
             updateTime();
         } else {
             console.log('No current user');
             window.location.href = 'index.html';
+        }
+    }
+
+    function updateBalanceDisplay(user) {
+        if (user) {
+            const balanceAmount = document.getElementById('balanceAmount');
+            const balanceUSD = document.getElementById('balanceUSD');
+            const gsx = user.balance_gsx.toLocaleString();
+            const usdt = (user.balance_gsx * 120.9).toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+            balanceAmount.textContent = gsx;
+            balanceUSD.textContent = usdt;
         }
     }
 
@@ -58,42 +85,56 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function logout() {
         console.log('Logout function called');
-        sessionStorage.removeItem('currentUser');
-        currentUser = null;
+        localStorage.removeItem('currentUser');
+        balanceManagement.logout();
         window.location.href = 'index.html';
     }
 
-    // Add event listeners for dashboard buttons
-    const logoutButton = document.getElementById('logoutButton');
-    if (logoutButton) {
-        logoutButton.addEventListener('click', logout);
+    function setupEventListeners() {
+        const logoutButton = document.getElementById('logoutButton');
+        if (logoutButton) {
+            logoutButton.addEventListener('click', logout);
+        }
+    
+        const depositButton = document.getElementById('depositButton');
+        const sendButton = document.getElementById('sendButton');
+        const receiveButton = document.getElementById('receiveButton');
+        const historyButton = document.getElementById('historyButton');
+    
+        if (depositButton) {
+            depositButton.addEventListener('click', () => {
+                console.log('Deposit button clicked');
+                window.location.href = 'deposit.html';
+            });
+        }
+    
+        if (sendButton) {
+            sendButton.addEventListener('click', () => {
+                console.log('Send button clicked');
+                window.location.href = 'send.html';
+            });
+        }
+    
+        if (receiveButton) {
+            receiveButton.addEventListener('click', () => {
+                console.log('Receive button clicked');
+                alert('Receive functionality coming soon!');
+            });
+        }
+    
+        if (historyButton) {
+            historyButton.addEventListener('click', () => {
+                console.log('History button clicked');
+                alert('History functionality coming soon!');
+            });
+        }
     }
-
-    const actionButtons = document.querySelectorAll('.action-button');
-    actionButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const action = this.id.replace('Button', '');
-            console.log(`${action} action clicked`);
-            
-            if (action === 'deposit') {
-                    window.location.href = 'deposit.html';
-                } else if (action === 'send') {
-                    window.location.href = 'send.html';
-                } else {
-                    alert(`${action.charAt(0).toUpperCase() + action.slice(1)} functionality coming soon!`);
-                }
-        });
-    });
 
     // Check if we're on the dashboard page
     if (document.getElementById('dashboardPage')) {
         console.log('Dashboard page detected');
-        if (loadUser()) {
-            updateDashboard();
-            setInterval(updateTime, 1000);
-        } else {
-            window.location.href = 'index.html';
-        }
+        initialize();
+        setupEventListeners();
     } else {
         console.log('Not on dashboard page');
     }
