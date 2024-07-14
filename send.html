@@ -13,7 +13,7 @@
             <h1>Send</h1>
             <div class="user-info">
                 <span id="username"></span>
-                <span id="wallet_address"></span>
+                <span id="wallet"></span>
                 <span id="time"></span>
             </div>
         </div>
@@ -31,7 +31,7 @@
             </div>
             <div class="form-group">
                 <label for="walletAddressInput">Wallet Address</label>
-                <input type="text" id="walletAddressInput" placeholder="Wallet Address">
+                <input type="text" id="walletAddressInput" placeholder="0xAf1845LyMnRhn3j0">
                 <span id="address-error" class="error-message">Wallet Address Not Found</span>
             </div>
             <div class="amount-section">
@@ -77,7 +77,6 @@
         <div class="spinner"></div>
     </div>
 
-    <script type="module" src="js/send.js"></script>
-    <script type="module" src="js/balance-management.js"></script>
+    <script src="js/send.js"></script>
 </body>
 </html>
