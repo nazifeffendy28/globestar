@@ -92,11 +92,23 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function validateInput() {
         const value = parseFloat(amountInput.value);
-        const errorMessage = `Minimum Send is ${MIN_GSX} GSX`;
+        const errorElement = document.getElementById('amount-error');
+        
+        if (value < MIN_GSX) {
+            errorElement.textContent = `Minimum Send is ${MIN_GSX} GSX`;
+            errorElement.style.display = 'block';
+            return false;
+        }
 
-        document.getElementById('amount-error').textContent = errorMessage;
-        document.getElementById('amount-error').style.display = value < MIN_GSX ? 'block' : 'none';
-        return value >= MIN_GSX;
+        const fees = calculateFees(value);
+        if (fees.totalAmount > currentUser.balance_gsx) {
+            errorElement.textContent = `Insufficient balance. Maximum you can send is ${(currentUser.balance_gsx / (1 + NETWORK_FEE_RATE)).toFixed(4)} GSX`;
+            errorElement.style.display = 'block';
+            return false;
+        }
+
+        errorElement.style.display = 'none';
+        return true;
     }
 
     function validateWalletAddress() {
@@ -122,7 +134,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function showInquiryPopup() {
-        if (!validateWalletAddress()) {
+        if (!validateWalletAddress() || !validateInput()) {
             return;
         }
         
