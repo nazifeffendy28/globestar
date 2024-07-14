@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function loadUsers() {
-        return fetch('users.json')
+        return fetch('js/users.json')
             .then(response => response.json())
             .then(data => {
                 users = data.users;
