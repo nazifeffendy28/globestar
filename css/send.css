@@ -13,7 +13,10 @@ body, html {
     font-family: 'Inter', sans-serif;
     margin: 0;
     padding: 0;
-    background-color: var(--bg-color);
+    background-image: url('images/background.png');
+    background-size: cover;
+    background-attachment: fixed;
+    background-position: center;
     color: var(--text-color);
     height: 100%;
 }
@@ -73,7 +76,7 @@ label {
 select, input {
     width: 100%;
     padding: 13px 20px;
-    background-color: var(--primary-color);
+    background-color: #3939393b;
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 12px;
     color: var(--text-color);
@@ -112,7 +115,7 @@ footer {
 #backButton, #sendButton {
     width: 269px;
     padding: 13px;
-    background-color: var(--primary-color);
+    background-color: #3939393b;
     color: var(--text-color);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 12px;
