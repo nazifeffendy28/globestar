@@ -6,11 +6,24 @@ import os
 app = Flask(__name__, static_folder='.', static_url_path='')
 CORS(app)
 
-USERS_FILE = 'js/users.json'
+# Get the directory where server.py is located
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+# Construct the full path to users.json
+USERS_FILE = os.path.join(BASE_DIR, 'js', 'users.json')
+
+print(f"Looking for users.json at: {USERS_FILE}")  # Debug print
 
 def load_users():
-    with open(USERS_FILE, 'r') as file:
-        return json.load(file)
+    try:
+        with open(USERS_FILE, 'r') as file:
+            return json.load(file)
+    except FileNotFoundError:
+        print(f"users.json not found at {USERS_FILE}. Creating default file.")
+        create_default_users_file()
+        return load_users()  # Recursive call to load the newly created file
+    except json.JSONDecodeError:
+        print(f"Error decoding JSON from {USERS_FILE}. File might be corrupted.")
+        return {"users": []}
 
 def save_users(users):
     with open(USERS_FILE, 'w') as file:

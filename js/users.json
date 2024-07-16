@@ -5,35 +5,42 @@
       "username": "globestar_liquidity",
       "password": "liquid123",
       "wallet_address": "0xAf1844bfeqRr1u25",
-      "balance_gsx": 2724171.6982500004
+      "balance_gsx": 197062.2590837502
     },
     {
       "id": 2,
       "username": "globestar_developer",
       "password": "development123",
       "wallet_address": "0xAf1845LyMnRhn3j0",
-      "balance_gsx": 4797.5
+      "balance_gsx": 889585.165
     },
     {
       "id": 3,
       "username": "bitget_exchange",
       "password": "BitgetGSX",
       "wallet_address": "0xAf1841sXb1tG3T1f",
-      "balance_gsx": 314204.69960000017
+      "balance_gsx": 308610.30860000016
     },
     {
       "id": 4,
       "username": "mexc_exchange",
       "password": "MEXCtothemoon",
       "wallet_address": "0xAf1843G5JjTafk0t",
-      "balance_gsx": 9048.199799999999
+      "balance_gsx": 118027.1998
     },
     {
       "id": 5,
       "username": "nazifeffendy",
       "password": "skilliz09",
       "wallet_address": "0xAf1877e36dVlqx4u",
-      "balance_gsx": 10594.99979999999
+      "balance_gsx": 5.569103999989238
+    },
+    {
+      "id": 6,
+      "username": "Binance",
+      "password": "binance",
+      "wallet_address": "0xAf1840i5OPaf7l41",
+      "balance_gsx": 1605740.42
     }
   ]
 }

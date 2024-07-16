@@ -65,7 +65,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             const balanceAmount = document.getElementById('balanceAmount');
             const balanceUSD = document.getElementById('balanceUSD');
             const gsx = user.balance_gsx.toLocaleString();
-            const usdt = (user.balance_gsx * 120.9).toLocaleString(undefined, {
+            const usdt = (user.balance_gsx * 204.49).toLocaleString(undefined, {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2
             });

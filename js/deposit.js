@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     const closeResult = document.getElementById('closeResult');
     const loadingSpinner = document.getElementById('loadingSpinner');
 
-    const GSX_TO_USDT_RATE = 120.9;
+    const GSX_TO_USDT_RATE = 204.49;
     const MIN_GSX = 0.05;
     const MIN_USDT = 10;
     const ADMIN_FEE_RATE = 0.0002; // 0.02%

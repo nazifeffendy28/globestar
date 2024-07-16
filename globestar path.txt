@@ -1,21 +1,28 @@
 └───globestar
-    ├───css
-	|	├───dashboard.css
-	|	├───deposit.css
-	|	├───login.css
-	|	├───send.css
-	|	└───styles.css
-    ├───js
-	|	└───deposit.js
-	|	└───login.js
-	|	└───main.js
-	|	└───send.js
-	|	└───users.json
-    ├───styles
-	|	└───styles.css
-	|
-	├───dashboard.html
-	├───deposit.html
-	├───index.html
-	├───login.html
-	└───send.html
+├───css
+│   ├───dashboard.css
+│   ├───deposit.css
+│   ├───history.css
+│   ├───login.css
+│   ├───send.css
+│   ├───receive.css
+│   └───styles.css
+├───js
+│   ├───balance-management.js
+│   ├───deposit.js
+│   ├───history.js
+│   ├───login.js
+│   ├───main.js
+│   ├───receive.js
+│   ├───send.js
+│   └───users.json
+├───styles
+│   └───styles.css
+│
+├───dashboard.html
+├───deposit.html
+├───history.html
+├───index.html
+├───login.html
+├───receive.html
+└───send.html

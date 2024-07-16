@@ -2,7 +2,7 @@ let currentUser = null;
 let users = [];
 let transactionHistory = JSON.parse(localStorage.getItem('transactionHistory') || '[]');
 
-const GSX_TO_USDT_RATE = 120.9;
+const GSX_TO_USDT_RATE = 204.49;
 const USERS_STORAGE_KEY = 'users';
 const CURRENT_USER_STORAGE_KEY = 'currentUser';
 

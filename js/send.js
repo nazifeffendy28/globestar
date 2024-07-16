@@ -10,7 +10,7 @@ import {
 } from './balance-management.js';
 
 document.addEventListener('DOMContentLoaded', function() {
-    const GSX_TO_USDT_RATE = 120.9;
+    const GSX_TO_USDT_RATE = 204.49;
     const MIN_GSX = 0.05;
     const NETWORK_FEE_RATE = 0.00025; // 0.025%
 

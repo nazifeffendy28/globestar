@@ -14,16 +14,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function setupEventListeners() {
     document.getElementById('backButton').addEventListener('click', () => window.location.href = 'dashboard.html');
-    
-    // Update this part
     document.getElementById('transactionBody').addEventListener('click', handleReceiptClick);
-    
-    document.getElementById('closeReceipt').addEventListener('click', () => {
-        document.getElementById('receiptPopup').classList.remove('active');
-        window.location.href = 'dashboard.html';
-    });
+    document.getElementById('closeReceiptButton').addEventListener('click', closeReceiptPopup);
 }
-
 
 function updateUserInfo(user) {
   document.getElementById('username').textContent = user.username;
@@ -79,17 +72,18 @@ function handleReceiptClick(event) {
 }
 
 function showReceipt(transaction) {
-    console.log('Showing receipt for transaction:', transaction);
-    const receiptPopup = document.getElementById('receiptPopup');
-    const receiptTitle = document.getElementById('receiptTitle');
-    const receiptDetails = document.getElementById('receiptDetails');
-    
-    if (!receiptPopup || !receiptTitle || !receiptDetails) {
-        console.error('Receipt popup elements not found');
-        return;
-    }
-    
-    receiptTitle.textContent = `${transaction.type} ${transaction.status}`;
+  console.log('Showing receipt for transaction:', transaction);
+  const receiptPopup = document.getElementById('receiptPopup');
+  const receiptTitle = document.getElementById('receiptTitle');
+  const receiptDetails = document.getElementById('receiptDetails');
+  
+  if (!receiptPopup || !receiptTitle || !receiptDetails) {
+      console.error('Receipt popup elements not found');
+      return;
+  }
+  
+  receiptTitle.textContent = `${transaction.type} ${transaction.status}`;
+
   
   let receiptContent = `
     <p>To Address <span>${transaction.address}</span></p>
@@ -130,9 +124,16 @@ function showReceipt(transaction) {
     receiptDetails.appendChild(timestamp);
     receiptDetails.appendChild(copyright);
   
-    receiptPopup.style.display = 'flex';  // Add this line
+    receiptPopup.style.display = 'flex';
     receiptPopup.classList.add('active');
     console.log('Receipt popup activated');
     console.log('Popup display style:', receiptPopup.style.display);
     console.log('Popup classList:', receiptPopup.classList);
+}
+
+function closeReceiptPopup() {
+    const receiptPopup = document.getElementById('receiptPopup');
+    receiptPopup.classList.remove('active');
+    receiptPopup.style.display = 'none';
+    console.log('Receipt popup closed');
 }

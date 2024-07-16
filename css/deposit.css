@@ -82,6 +82,10 @@ select, input {
     transition: all 0.3s ease;
 }
 
+select option {
+    background-color: #3939393b; 
+}
+
 select:hover, input:hover, select:focus, input:focus {
     box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
 }
